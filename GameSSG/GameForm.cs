@@ -33,6 +33,7 @@ namespace GameSSG
 		private void GameForm_KeyDown( object sender, KeyEventArgs e )
 		{
 			game.hero.MoveTo( e.KeyCode );
+			
 		}
 
 

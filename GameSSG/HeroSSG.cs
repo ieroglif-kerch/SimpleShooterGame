@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;	//for use extern libraries
 
 namespace GameSSG
 {
@@ -20,15 +21,27 @@ namespace GameSSG
 		Down_Left
 	}
 	
+
 	class HeroSSG
 	{
 		Point  positon;
 		public Point	 Direct    { get; set; }
 		public Direction Condition { get; set; }
-		const  int STEP = 5;
-		bool reway=false;
-	
+		  int STEP = 5;
 		
+		//Add extern library for GetKeyState
+		[DllImport( "USER32.dll" )]
+		//method declaration
+		static extern short GetKeyState( Keys key);
+		//Result Filter, methor return diferent button statuses, we need only if key pressed
+		private const int KEY_PRESSED = 0x8000;
+		//----------------------------------
+
+		public bool IsPressed(Keys key)
+		{
+			int i = GetKeyState( key ) & KEY_PRESSED;
+			return Convert.ToBoolean( i  );
+		}
 
 		public HeroSSG(int X = 100, int Y = 20)
 		{
@@ -39,6 +52,18 @@ namespace GameSSG
 		/// </summary>
 		public void Move()
 		{
+			//if push only one button
+				 if (IsPressed( Keys.A )) Condition = Direction.Left;
+			else if (IsPressed( Keys.D )) Condition = Direction.Right;
+			else if (IsPressed( Keys.W )) Condition = Direction.Top;
+			else if (IsPressed( Keys.S )) Condition = Direction.Down;
+			//if two
+				 if (IsPressed( Keys.A ) && IsPressed( Keys.W )) Condition = Direction.Top_Left;
+			else if (IsPressed( Keys.D ) && IsPressed( Keys.W )) Condition = Direction.Top_Right;
+			else if (IsPressed( Keys.S ) && IsPressed( Keys.A )) Condition = Direction.Down_Left;
+			else if (IsPressed( Keys.S ) && IsPressed( Keys.D )) Condition = Direction.Down_Right;
+
+
 			if (Condition == Direction.Top)   positon.Y -= STEP; 
 			if (Condition == Direction.Down)  positon.Y += STEP;
 			if (Condition == Direction.Left)  positon.X -= STEP;
@@ -63,6 +88,7 @@ namespace GameSSG
 				positon.X += STEP;
 				positon.Y += STEP;
 			}
+			Condition = 0;
 		}
 
 		public Point Positon 
@@ -76,47 +102,7 @@ namespace GameSSG
 		/// <param name="KeyCode"></param>
 		public void MoveTo( Keys KeyCode )
 		{
-			
-			if (Condition == 0)
-			{
-				switch (KeyCode)
-				{
-					case Keys.A: Condition = Direction.Left; break;
-					case Keys.D: Condition = Direction.Right; break;
-					case Keys.W: Condition = Direction.Top; break;
-					case Keys.S: Condition = Direction.Down; break;
-				}
-
-			} else
-			{
-				if (Condition == Direction.Top)
-					switch (KeyCode)
-					{
-						case Keys.D: Condition = Direction.Top_Right; break;
-						case Keys.A: Condition = Direction.Top_Left; break;
-					}
-				if (Condition == Direction.Down)
-					switch (KeyCode)
-					{
-						case Keys.D: Condition = Direction.Down_Right; break;
-						case Keys.A: Condition = Direction.Down_Left; break;
-					}
-				if (Condition == Direction.Right)
-					switch (KeyCode)
-					{
-						case Keys.W: Condition = Direction.Top_Right; break;
-						case Keys.S: Condition = Direction.Down_Right; break;
-						case Keys.A: Condition = Direction.Left; reway = true; break;
-
-					}
-				if (Condition == Direction.Left)
-					switch (KeyCode)
-					{
-						case Keys.W: Condition = Direction.Top_Left; break;
-						case Keys.S: Condition = Direction.Down_Left; break;
-						case Keys.D: Condition = Direction.Right; reway = true; break;
-					}
-			}
+		
 		}
 
 		/// <summary>
@@ -125,50 +111,7 @@ namespace GameSSG
 		/// <param name="KeyCode"></param>
 		public void Stop( Keys KeyCode)
 		{
-				if (( ( Condition == Direction.Top && KeyCode == Keys.W )
-						|| ( Condition == Direction.Down && KeyCode == Keys.S )
-						|| ( Condition == Direction.Right && KeyCode == Keys.D )
-						|| ( Condition == Direction.Left && KeyCode == Keys.A ) ) && reway == false)
-				{
-					Condition = 0;
-				} 
-				
-				else if (( Condition == Direction.Right && KeyCode == Keys.D ) && reway == true)
-				{
-					Condition = Direction.Left;
-					reway = false;
-				} else if (( Condition == Direction.Left && KeyCode == Keys.A ) && reway == true)
-				{
-					Condition = Direction.Right;
-					reway = false;
-				} else
-				{
-
-					if (Condition == Direction.Top_Left)
-						switch (KeyCode)
-						{
-							case Keys.W: Condition = Direction.Left; break;
-							case Keys.A: Condition = Direction.Top; break;
-						}
-					if (Condition == Direction.Down_Left)
-						switch (KeyCode)
-						{
-							case Keys.S: Condition = Direction.Left; break;
-							case Keys.A: Condition = Direction.Down; break;
-						}
-					if (Condition == Direction.Top_Right)
-						switch (KeyCode)
-						{
-							case Keys.W: Condition = Direction.Right; break;
-							case Keys.D: Condition = Direction.Top; break;
-						}
-					if (Condition == Direction.Down_Right)
-						switch (KeyCode)
-						{
-							case Keys.D: Condition = Direction.Down; break;
-							case Keys.S: Condition = Direction.Right; break;
-						}
-				}
+	
 		}	
 	}
 

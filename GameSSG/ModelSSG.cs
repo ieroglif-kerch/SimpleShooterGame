@@ -55,15 +55,15 @@ namespace GameSSG
 
 		public void Draw()
 		{
-			if(hero.Condition!=0)
-			{
+			
+			
 			//erase current position
 			buffer.Graphics.DrawEllipse( new Pen(Color.Gray), new Rectangle( hero.Positon, new Size( 5, 5 ) ) );
 			//new position
 			hero.Move();
 			//paint hero
 			buffer.Graphics.DrawEllipse( new Pen( Color.Black ), new Rectangle( hero.Positon, new Size( 5, 5 ) ) );
-			}
+			
 			buffer.Render();
 		}
 		
