@@ -39,9 +39,9 @@ namespace GameSSG
 
 		private void GameForm_KeyUp( object sender, KeyEventArgs e )
 		{
-			
-				
-			
+
+
+			game.hero.Stop( e.KeyCode );
 
 		}
 
